@@ -1,0 +1,33 @@
+spec_version: 1
+name: oncall_env
+type: space
+runtime: fastapi
+app: server.app:app
+port: 8000
+
+description: >
+  OnCallOps: Production Incident Response Environment.
+  An AI agent acts as an SRE on-call engineer, diagnosing and resolving
+  production incidents across a simulated microservices architecture.
+
+tasks:
+  - id: memory_leak
+    name: "Memory Leak"
+    difficulty: easy
+    description: >
+      The user-service is experiencing an out-of-memory condition.
+      Diagnose the issue and restore service health.
+
+  - id: db_connection_storm
+    name: "Database Connection Storm"
+    difficulty: medium
+    description: >
+      Multiple services are experiencing timeouts. The database is running
+      low on connections due to a bad deployment in order-service.
+
+  - id: config_drift
+    name: "Config Drift Chaos"
+    difficulty: hard
+    description: >
+      Intermittent 5xx errors across the stack caused by a subtle
+      auth-service config change (token TTL set to 1 second).

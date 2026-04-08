@@ -1,0 +1,8 @@
+__pycache__/
+venv/
+.idea/
+.git/
+.env
+README.md
+client.py
+inference.py
