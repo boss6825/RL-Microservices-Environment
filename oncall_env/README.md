@@ -141,12 +141,90 @@ The reward function provides signal over the full trajectory:
 - Python 3.10+
 - Docker (for containerized deployment)
 - `openenv-core` package
+- `python-dotenv` package for local `.env` loading
+
+### Local Environment Configuration
+
+Create a local env file from the repository root before running the server or
+the baseline inference script:
+
+```bash
+cp .env.example .env
+```
+
+Then edit `.env` and provide real values for:
+
+- `HF_TOKEN`
+- `API_BASE_URL`
+- `MODEL_NAME`
+- Optional: `ONCALL_TASK`
+
+The `.env` file is gitignored and must not be committed.
+
+### Required Hugging Face Token Permissions
+
+Create `HF_TOKEN` with the following permissions enabled.
+
+**User permissions (ArpitSolanki)**
+
+- **Repositories**
+  - Read access to contents of all repos under your personal namespace
+  - View access requests for all gated repos under your personal namespace
+  - Read access to contents of all public gated repos you can access
+  - Write access to contents/settings of all repos under your personal namespace
+- **Inference**
+  - Make calls to Inference Providers
+  - Make calls to your Inference Endpoints
+  - Manage your Inference Endpoints
+- **Webhooks**
+  - Access webhooks data
+  - Create and manage webhooks
+- **Collections**
+  - Read access to all collections under your personal namespace
+  - Write access to all collections under your personal namespace
+- **Discussions & Posts**
+  - Interact with discussions / Open PRs on repos under your personal namespace
+  - Interact with discussions / Open PRs on external repos
+  - Interact with posts
+- **Billing**
+  - Read access to your billing usage and know if a payment method is set
+- **Jobs**
+  - Start and manage Jobs on your behalf
+
+**Repository permissions**
+
+- Read access to contents of selected repos
+- View access requests for selected gated repos
+- Interact with discussions / Open pull requests on selected repos
+- Write access to contents/settings of selected repos
+
+**Organization permissions**
+
+- **Repositories**
+  - Read access to contents of all repos in selected organizations
+  - View access requests for gated repos in selected organizations
+  - Interact with discussions / Open pull requests on repos in selected organizations
+  - Write access to contents/settings of all repos in selected organizations
+- **Inference**
+  - Make calls to Inference Providers on behalf of the selected organizations
+  - Make calls to the organization's Inference Endpoints
+  - Manage the organization's Inference Endpoints
+- **Org settings**
+  - Read access to organizations settings
+  - Write access to organizations settings / member management
+- **Collections**
+  - Read access to all collections in selected organizations
+  - Write access to all collections in selected organizations
+- **Resource Groups**
+  - Write access to resource groups in selected organizations
+- **Jobs**
+  - Start and manage Jobs in selected organizations
 
 ### Local Development
 
 ```bash
 # Install dependencies
-pip install openenv-core openai
+pip install openenv-core openai python-dotenv
 
 # Start the server
 cd oncall_env
@@ -169,10 +247,10 @@ docker run -p 8000:8000 oncall-env:latest
 ### Running the Baseline Inference
 
 ```bash
-# Set environment variables
-export HF_TOKEN="your-huggingface-token"
-export API_BASE_URL="https://router.huggingface.co/v1"
-export MODEL_NAME="Qwen/Qwen2.5-72B-Instruct"
+# Create a local config file from the repository root
+cp .env.example .env
+
+# Edit .env with your real Hugging Face token and model settings
 
 # Run inference on all 3 tasks
 python inference.py

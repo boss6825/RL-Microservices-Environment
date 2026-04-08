@@ -24,8 +24,10 @@ from openenv.core.env_server.types import State
 
 try:
     from ..models import OnCallAction, OnCallObservation
+    from ..env_config import load_local_env
 except ImportError:
     from models import OnCallAction, OnCallObservation
+    from env_config import load_local_env
 
 try:
     from .infrastructure import Infrastructure
@@ -33,6 +35,8 @@ try:
 except ImportError:
     from server.infrastructure import Infrastructure
     from server.scenarios import ALL_SCENARIOS, Scenario, grade_episode
+
+load_local_env()
 
 MAX_STEPS = 15
 MINUTES_PER_STEP = 3.0

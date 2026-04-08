@@ -3,7 +3,8 @@ Inference Script for OnCallOps: Production Incident Response Environment
 ========================================================================
 
 MANDATORY
-- Before submitting, ensure the following variables are defined in your environment configuration:
+- Before submitting, ensure the following variables are defined in your local `.env`
+  file or exported in your shell environment:
     API_BASE_URL   The API endpoint for the LLM.
     MODEL_NAME     The model identifier to use for inference.
     HF_TOKEN       Your Hugging Face / API key.
@@ -27,15 +28,18 @@ from openai import OpenAI
 # ---------------------------------------------------------------------------
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
+from oncall_env.env_config import get_env, load_local_env
 from oncall_env.models import OnCallAction, OnCallObservation
 from oncall_env.server.oncall_env_environment import OnCallEnvironment
 
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
-API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
-API_BASE_URL = os.getenv("API_BASE_URL") or "https://router.huggingface.co/v1"
-MODEL_NAME = os.getenv("MODEL_NAME") or "Qwen/Qwen2.5-72B-Instruct"
+load_local_env()
+
+API_KEY = get_env("HF_TOKEN", "API_KEY") or ""
+API_BASE_URL = get_env("API_BASE_URL") or ""
+MODEL_NAME = get_env("MODEL_NAME") or ""
 
 BENCHMARK = "oncall_env"
 TASKS = ["memory_leak", "db_connection_storm", "config_drift"]
@@ -190,8 +194,21 @@ def run_episode(task_id: str, client: OpenAI) -> float:
 # Main
 # ---------------------------------------------------------------------------
 def main() -> None:
+    missing_config = []
     if not API_KEY:
-        print("ERROR: Set HF_TOKEN or API_KEY environment variable", file=sys.stderr)
+        missing_config.append("HF_TOKEN (or legacy API_KEY)")
+    if not API_BASE_URL:
+        missing_config.append("API_BASE_URL")
+    if not MODEL_NAME:
+        missing_config.append("MODEL_NAME")
+
+    if missing_config:
+        print(
+            "ERROR: Missing required configuration: "
+            f"{', '.join(missing_config)}. "
+            "Copy .env.example to .env and set real values before running inference.",
+            file=sys.stderr,
+        )
         sys.exit(1)
 
     client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
